@@ -1,0 +1,2 @@
+fast_res50_256x192.pth
+fast_res101_320x256.pth
