@@ -2,9 +2,9 @@ import time
 import numpy as np
 from collections import deque
 
-from linear_assignment import min_cost_matching, matching_cascade
-from kalman_filter import KalmanFilter
-from iou_matching import iou_cost
+from .linear_assignment import min_cost_matching, matching_cascade
+from .kalman_filter import KalmanFilter
+from .iou_matching import iou_cost
 
 
 class TrackState:
