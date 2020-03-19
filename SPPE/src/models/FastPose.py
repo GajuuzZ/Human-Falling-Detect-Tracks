@@ -3,7 +3,7 @@ from torch.autograd import Variable
 
 from .layers.SE_Resnet import SEResnet
 from .layers.DUC import DUC
-from opt import opt
+from SPPE.src.opt import opt
 
 
 class FastPose(nn.Module):

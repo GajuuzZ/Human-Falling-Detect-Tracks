@@ -18,7 +18,7 @@ from ActionsEstLoader import TSSTG
 
 #source = '../Data/test_video/test7.mp4'
 #source = '../Data/falldata/Home/Videos/video (2).avi'  # hard detect
-source = '../Data/falldata/Home/Videos/video (26).avi'
+source = '../Data/falldata/Home/Videos/video (36).avi'
 #source = 2
 
 
@@ -41,16 +41,18 @@ def kpt2bbox(kpt, ex=20):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Human Fall Detection Demo.')
-    parser.add_argument('--camera', required=True,
+    parser.add_argument('-C', '--camera', required=True,
                         help='Source of camera or video file path.')
     parser.add_argument('--detection_input_size', type=int, default=416,
                         help='Size of input in detection model in square must be divisible by 32 (int).')
     parser.add_argument('--pose_input_size', type=tuple, default=(256, 192),
                         help='Size of input in pose model must be divisible by 32 (h, w)')
-    parser.add_argument('--pose_backbone', type=str, default='resnet101',
+    parser.add_argument('--pose_backbone', type=str, default='resnet50',
                         help='Backbone model for SPPE FastPose model.')
-    parser.add_argument('--show_detected', default=True, action='store_true',
+    parser.add_argument('--show_detected', default=False, action='store_true',
                         help='Show all bounding box from detection.')
+    parser.add_argument('--show_skeleton', default=False, action='store_true',
+                        help='Show skeleton pose.')
     parser.add_argument('--save_out', type=str, default='',
                         help='Save display to video file.')
     parser.add_argument('--device', type=str, default='cuda',
@@ -149,7 +151,8 @@ if __name__ == '__main__':
 
             # VISUALIZE.
             if track.time_since_update == 0:
-                frame = draw_single(frame, track.keypoints_list[-1])
+                if args.show_skeleton:
+                    frame = draw_single(frame, track.keypoints_list[-1])
                 frame = cv2.rectangle(frame, (bbox[0], bbox[1]), (bbox[2], bbox[3]), (0, 255, 0), 1)
                 frame = cv2.putText(frame, str(track_id), (center[0], center[1]), cv2.FONT_HERSHEY_COMPLEX,
                                     0.4, (255, 0, 0), 2)

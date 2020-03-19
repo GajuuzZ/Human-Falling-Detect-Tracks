@@ -2,7 +2,7 @@ import torch.nn as nn
 from .layers.PRM import Residual as ResidualPyramid
 from .layers.Residual import Residual as Residual
 from torch.autograd import Variable
-from opt import opt
+from SPPE.src.opt import opt
 from collections import defaultdict
 
 
