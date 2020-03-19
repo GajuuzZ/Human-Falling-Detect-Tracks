@@ -1,17 +1,16 @@
-import torch
-import re
 import os
-import collections
-from torch._six import string_classes, int_classes
+import re
 import cv2
-from opt import opt
-from tqdm import tqdm
 import time
-import matplotlib.pyplot as plt
-from PIL import Image
-import numpy as np
 import math
-import copy
+import torch
+import collections
+import numpy as np
+import matplotlib.pyplot as plt
+
+from tqdm import tqdm
+from PIL import Image
+from torch._six import string_classes, int_classes
 
 RED = (0, 0, 255)
 GREEN = (0, 255, 0)
@@ -101,12 +100,12 @@ def collate_fn_list(batch):
     return img, inp, im_name
 
 
-def draw_single(frame, pts, format='coco'):
-    if format == 'coco':
+def draw_single(frame, pts, joint_format='coco'):
+    if joint_format == 'coco':
         l_pair = COCO_PAIR
         p_color = POINT_COLORS
         line_color = LINE_COLORS
-    elif format == 'mpii':
+    elif joint_format == 'mpii':
         l_pair = MPII_PAIR
         p_color = [PURPLE, BLUE, BLUE, RED, RED, BLUE, BLUE, RED, RED, PURPLE, PURPLE, PURPLE, RED, RED,BLUE,BLUE]
     else:
@@ -129,7 +128,7 @@ def draw_single(frame, pts, format='coco'):
     return frame
 
 
-def vis_frame_fast(frame, im_res, format='coco'):
+def vis_frame_fast(frame, im_res, joint_format='coco'):
     """
     frame: frame image
     im_res: im_res of predictions
@@ -137,11 +136,11 @@ def vis_frame_fast(frame, im_res, format='coco'):
 
     return rendered image
     """
-    if format == 'coco':
+    if joint_format == 'coco':
         l_pair = COCO_PAIR
         p_color = POINT_COLORS
         line_color = LINE_COLORS
-    elif format == 'mpii':
+    elif joint_format == 'mpii':
         l_pair = MPII_PAIR
         p_color = [PURPLE, BLUE, BLUE, RED, RED, BLUE, BLUE, RED, RED, PURPLE, PURPLE, PURPLE, RED, RED,BLUE,BLUE]
     else:
@@ -171,7 +170,7 @@ def vis_frame_fast(frame, im_res, format='coco'):
     return img
 
 
-def vis_frame(frame, im_res, format='coco'):
+def vis_frame(frame, im_res, joint_format='coco'):
     """
     frame: frame image
     im_res: im_res of predictions
@@ -179,11 +178,11 @@ def vis_frame(frame, im_res, format='coco'):
 
     return rendered image
     """
-    if format == 'coco':
+    if joint_format == 'coco':
         l_pair = COCO_PAIR
         p_color = POINT_COLORS
         line_color = LINE_COLORS
-    elif format == 'mpii':
+    elif joint_format == 'mpii':
         l_pair = MPII_PAIR
         p_color = [PURPLE, BLUE, BLUE, RED, RED, BLUE, BLUE, RED, RED, PURPLE, PURPLE, PURPLE, RED, RED, BLUE, BLUE]
         line_color = [PURPLE, BLUE, BLUE, RED, RED, BLUE, BLUE, RED, RED, PURPLE, PURPLE, RED, RED, BLUE, BLUE]
