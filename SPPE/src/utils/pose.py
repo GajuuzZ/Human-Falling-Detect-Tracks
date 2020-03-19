@@ -44,7 +44,7 @@ def generateSampleBox(img_path, bndbox, part, nJoints, imgset, scale_factor, dat
         PatchScale = random.uniform(0, 1)
         if PatchScale > 0.85:
             ratio = ht / width
-            if (width < ht):
+            if width < ht:
                 patchWidth = PatchScale * width
                 patchHt = patchWidth * ratio
             else:
@@ -72,12 +72,12 @@ def generateSampleBox(img_path, bndbox, part, nJoints, imgset, scale_factor, dat
     if imgset == 'coco':
         for i in range(17):
             if part[i][0] > 0 and part[i][0] > upLeft[0] and part[i][1] > upLeft[1] \
-               and part[i][0] < bottomRight[0] and part[i][1] < bottomRight[1]:
+                    and part[i][0] < bottomRight[0] and part[i][1] < bottomRight[1]:
                 jointNum += 1
     else:
         for i in range(16):
             if part[i][0] > 0 and part[i][0] > upLeft[0] and part[i][1] > upLeft[1] \
-               and part[i][0] < bottomRight[0] and part[i][1] < bottomRight[1]:
+                    and part[i][0] < bottomRight[0] and part[i][1] < bottomRight[1]:
                 jointNum += 1
 
     # Doing Random Crop

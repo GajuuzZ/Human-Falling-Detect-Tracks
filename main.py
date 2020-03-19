@@ -40,25 +40,25 @@ def kpt2bbox(kpt, ex=20):
 
 
 if __name__ == '__main__':
-    parser = argparse.ArgumentParser(description='Human Fall Detection Demo.')
-    parser.add_argument('-C', '--camera', required=True,
+    par = argparse.ArgumentParser(description='Human Fall Detection Demo.')
+    par.add_argument('-C', '--camera', required=True,  # default=0,
                         help='Source of camera or video file path.')
-    parser.add_argument('--detection_input_size', type=int, default=416,
+    par.add_argument('--detection_input_size', type=int, default=416,
                         help='Size of input in detection model in square must be divisible by 32 (int).')
-    parser.add_argument('--pose_input_size', type=tuple, default=(256, 192),
+    par.add_argument('--pose_input_size', type=tuple, default=(256, 192),
                         help='Size of input in pose model must be divisible by 32 (h, w)')
-    parser.add_argument('--pose_backbone', type=str, default='resnet50',
+    par.add_argument('--pose_backbone', type=str, default='resnet50',
                         help='Backbone model for SPPE FastPose model.')
-    parser.add_argument('--show_detected', default=False, action='store_true',
+    par.add_argument('--show_detected', default=False, action='store_true',
                         help='Show all bounding box from detection.')
-    parser.add_argument('--show_skeleton', default=False, action='store_true',
+    par.add_argument('--show_skeleton', default=False, action='store_true',
                         help='Show skeleton pose.')
-    parser.add_argument('--save_out', type=str, default='',
+    par.add_argument('--save_out', type=str, default='',
                         help='Save display to video file.')
-    parser.add_argument('--device', type=str, default='cuda',
+    par.add_argument('--device', type=str, default='cuda',
                         help='Device to run model on cpu or cuda.')
-
-    args = parser.parse_args()
+    #args, rest = par.parse_known_args()
+    args = par.parse_intermixed_args()
 
     device = args.device
 

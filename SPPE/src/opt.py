@@ -1,10 +1,10 @@
-import argparse
+"""import argparse
 import torch
 
 parser = argparse.ArgumentParser(description='PyTorch AlphaPose Training')
 parser.add_argument("--return_counts", type=bool, default=True)
 parser.add_argument("--mode", default='client')
-#parser.add_argument("--port", default=52162)
+parser.add_argument("--port", default=52162)
 
 "----------------------------- General options -----------------------------"
 parser.add_argument('--expID', default='default', type=str,
@@ -95,11 +95,21 @@ parser.add_argument('--backend', dest='backend', type=str, default='gloo',
                     help='backend for distributed training')
 parser.add_argument('--port', dest='port',
                     help='port of server')
+opt = parser.parse_args()"""
 
-
-opt = parser.parse_args()
 """if opt.Continue:
     opt = torch.load("../exp/{}/{}/option.pkl".format(opt.dataset, opt.expID))
     opt.Continue = True
     opt.nEpochs = 50
     print("--- Continue ---")"""
+
+
+class opt:
+    nClasses = 33
+    inputResH = 384
+    inputResW = 320
+    outputResH = 96
+    outputResW = 80
+    scale = 0.25
+    rotate = 30
+    hmGauss = 1
