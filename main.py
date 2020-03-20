@@ -53,7 +53,7 @@ if __name__ == '__main__':
                         help='Show all bounding box from detection.')
     par.add_argument('--show_skeleton', default=False, action='store_true',
                         help='Show skeleton pose.')
-    par.add_argument('--save_out', type=str, default='',
+    par.add_argument('--save_out', type=str, default='output.avi',
                         help='Save display to video file.')
     par.add_argument('--device', type=str, default='cuda',
                         help='Device to run model on cpu or cuda.')
@@ -89,6 +89,12 @@ if __name__ == '__main__':
 
     #frame_size = cam.frame_size
     #scf = torch.min(inp_size / torch.FloatTensor([frame_size]), 1)[0]
+
+    outvid = False
+    if args.save_out != '':
+        outvid = True
+        codec = cv2.VideoWriter_fourcc(*'MJPG')
+        writer = cv2.VideoWriter(args.save_out, codec, 30, (inp_dets * 2, inp_dets * 2))
 
     fps_time = 0
     f = 0
@@ -166,10 +172,15 @@ if __name__ == '__main__':
         frame = frame[:, :, ::-1]
         fps_time = time.time()
 
+        if outvid:
+            writer.write(frame)
+
         cv2.imshow('frame', frame)
         if cv2.waitKey(1) & 0xFF == ord('q'):
             break
 
     # Clear resource.
     cam.stop()
+    if outvid:
+        writer.release()
     cv2.destroyAllWindows()
