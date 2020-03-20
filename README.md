@@ -8,7 +8,7 @@ of each person tracks.
 Which now support 7 actions: Standing, Walking, Sitting, Lying Down, Stand up, Sit down, Fall Down.
 
 <div align="center">
-    <img src="sample1.gif" width="833">
+    <img src="sample1.gif" width="416">
 </div>
 
 ## Prerequisites
