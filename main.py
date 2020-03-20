@@ -53,7 +53,7 @@ if __name__ == '__main__':
                         help='Show all bounding box from detection.')
     par.add_argument('--show_skeleton', default=False, action='store_true',
                         help='Show skeleton pose.')
-    par.add_argument('--save_out', type=str, default='output.avi',
+    par.add_argument('--save_out', type=str, default='',
                         help='Save display to video file.')
     par.add_argument('--device', type=str, default='cuda',
                         help='Device to run model on cpu or cuda.')
