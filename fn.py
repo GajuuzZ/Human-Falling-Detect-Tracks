@@ -118,13 +118,13 @@ def draw_single(frame, pts, joint_format='coco'):
             continue
         cor_x, cor_y = int(pts[n, 0]), int(pts[n, 1])
         part_line[n] = (cor_x, cor_y)
-        cv2.circle(frame, (cor_x, cor_y), 4, p_color[n], -1)
+        cv2.circle(frame, (cor_x, cor_y), 3, p_color[n], -1)
 
     for i, (start_p, end_p) in enumerate(l_pair):
         if start_p in part_line and end_p in part_line:
             start_xy = part_line[start_p]
             end_xy = part_line[end_p]
-            cv2.line(frame, start_xy, end_xy, line_color[i], int(2*(pts[start_p, 2] + pts[end_p, 2]) + 1))
+            cv2.line(frame, start_xy, end_xy, line_color[i], int(1*(pts[start_p, 2] + pts[end_p, 2]) + 1))
     return frame
 
 

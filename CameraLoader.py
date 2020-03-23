@@ -16,7 +16,7 @@ class CamLoader:
         camera: (int, str) Source of camera or video.,
         preprocess: (Callable function) to process the frame before return.
     """
-    def __init__(self, camera, preprocess=None):
+    def __init__(self, camera, preprocess=None, ori_return=False):
         self.stream = cv2.VideoCapture(camera)
         assert self.stream.isOpened(), 'Cannot read camera source!'
         self.fps = self.stream.get(cv2.CAP_PROP_FPS)
@@ -26,7 +26,9 @@ class CamLoader:
         self.stopped = False
         self.ret = True
         self.frame = None
+        self.ori_frame = None
         self.read_lock = Lock()
+        self.ori = ori_return
 
         self.preprocess_fn = preprocess
 
@@ -40,6 +42,7 @@ class CamLoader:
         while not self.stopped:
             ret, frame = self.stream.read()
             self.read_lock.acquire()
+            self.ori_frame = frame.copy()
             if ret and self.preprocess_fn is not None:
                 frame = self.preprocess_fn(frame)
 
@@ -53,8 +56,12 @@ class CamLoader:
     def getitem(self):
         self.read_lock.acquire()
         frame = self.frame.copy()
+        ori_frame = self.ori_frame.copy()
         self.read_lock.release()
-        return frame
+        if self.ori:
+            return frame, ori_frame
+        else:
+            return frame
 
     def stop(self):
         if self.stopped:
@@ -63,6 +70,10 @@ class CamLoader:
         if self.t.is_alive():
             self.t.join()
         #self.stream.release()
+
+    def __del__(self):
+        if self.stream.isOpened():
+            self.stream.release()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.stream.isOpened():
@@ -134,6 +145,10 @@ class CamLoader_Q:
 
     def __len__(self):
         return self.Q.qsize()
+
+    def __del__(self):
+        if self.stream.isOpened():
+            self.stream.release()
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         if self.stream.isOpened():

@@ -41,11 +41,11 @@ def kpt2bbox(kpt, ex=20):
 
 if __name__ == '__main__':
     par = argparse.ArgumentParser(description='Human Fall Detection Demo.')
-    par.add_argument('-C', '--camera', required=True,  # default=0,
+    par.add_argument('-C', '--camera', required=True,  # default=2,
                         help='Source of camera or video file path.')
     par.add_argument('--detection_input_size', type=int, default=416,
                         help='Size of input in detection model in square must be divisible by 32 (int).')
-    par.add_argument('--pose_input_size', type=tuple, default=(256, 192),
+    par.add_argument('--pose_input_size', type=str, default='256x192',
                         help='Size of input in pose model must be divisible by 32 (h, w)')
     par.add_argument('--pose_backbone', type=str, default='resnet50',
                         help='Backbone model for SPPE FastPose model.')
@@ -67,7 +67,8 @@ if __name__ == '__main__':
     detect_model = TinyYOLOv3_onecls(inp_dets, device=device)
 
     # POSE MODEL.
-    inp_pose = args.pose_input_size
+    inp_pose = args.pose_input_size.split('x')
+    inp_pose = (int(inp_pose[0]), int(inp_pose[1]))
     pose_model = SPPE_FastPose(args.pose_backbone, inp_pose[0], inp_pose[1], device=device)
 
     # Tracker.
@@ -85,7 +86,8 @@ if __name__ == '__main__':
         cam = CamLoader_Q(cam_source, queue_size=1000, preprocess=preproc).start()
     else:
         # Use normal thread loader for webcam.
-        cam = CamLoader(cam_source, preprocess=preproc).start()
+        cam = CamLoader(int(cam_source) if cam_source.isdigit() else cam_source,
+                        preprocess=preproc).start()
 
     #frame_size = cam.frame_size
     #scf = torch.min(inp_size / torch.FloatTensor([frame_size]), 1)[0]
