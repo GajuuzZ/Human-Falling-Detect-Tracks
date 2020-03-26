@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import os
 import cv2
 import time
@@ -18,7 +17,7 @@ from ActionsEstLoader import TSSTG
 
 #source = '../Data/test_video/test7.mp4'
 #source = '../Data/falldata/Home/Videos/video (2).avi'  # hard detect
-source = '../Data/falldata/Home/Videos/video (36).avi'
+source = '../Data/falldata/Home/Videos/video (1).avi'
 #source = 2
 
 
@@ -43,22 +42,21 @@ if __name__ == '__main__':
     par = argparse.ArgumentParser(description='Human Fall Detection Demo.')
     par.add_argument('-C', '--camera', required=True,  # default=2,
                         help='Source of camera or video file path.')
-    par.add_argument('--detection_input_size', type=int, default=416,
+    par.add_argument('--detection_input_size', type=int, default=384,
                         help='Size of input in detection model in square must be divisible by 32 (int).')
-    par.add_argument('--pose_input_size', type=str, default='256x192',
+    par.add_argument('--pose_input_size', type=str, default='224x160',
                         help='Size of input in pose model must be divisible by 32 (h, w)')
     par.add_argument('--pose_backbone', type=str, default='resnet50',
                         help='Backbone model for SPPE FastPose model.')
     par.add_argument('--show_detected', default=False, action='store_true',
                         help='Show all bounding box from detection.')
-    par.add_argument('--show_skeleton', default=False, action='store_true',
+    par.add_argument('--show_skeleton', default=True, action='store_true',
                         help='Show skeleton pose.')
     par.add_argument('--save_out', type=str, default='',
                         help='Save display to video file.')
     par.add_argument('--device', type=str, default='cuda',
                         help='Device to run model on cpu or cuda.')
-    #args, rest = par.parse_known_args()
-    args = par.parse_intermixed_args()
+    args = par.parse_args()
 
     device = args.device
 
@@ -112,11 +110,12 @@ if __name__ == '__main__':
         tracker.predict()
         # Merge two source of predicted bbox together.
         for track in tracker.tracks:
-            det = torch.tensor([track.to_tlbr().tolist() + [1.0, 1.0, 0.0]], dtype=torch.float32)
+            det = torch.tensor([track.to_tlbr().tolist() + [0.5, 1.0, 0.0]], dtype=torch.float32)
             detected = torch.cat([detected, det], dim=0) if detected is not None else det
 
         detections = []  # List of Detections object for tracking.
         if detected is not None:
+            #detected = non_max_suppression(detected[None, :], 0.45, 0.2)[0]
             # Predict skeleton pose of each bboxs.
             poses = pose_model.predict(frame, detected[:, 0:4], detected[:, 4])
 
