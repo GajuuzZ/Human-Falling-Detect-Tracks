@@ -3,7 +3,6 @@ This script to create dataset and labels by clean off some NaN, do a normalizati
 label smoothing and label weights by scores.
 
 """
-
 import os
 import pickle
 import numpy as np
@@ -16,7 +15,7 @@ main_parts = ['LShoulder_x', 'LShoulder_y', 'RShoulder_x', 'RShoulder_y', 'LHip_
               'RHip_x', 'RHip_y']
 main_idx_parts = [1, 2, 7, 8, -1]  # 1.5
 
-csv_pose_file = '../../Data/Coffee_room_new-pose+score.csv'
+csv_pose_file = '../Data/Coffee_room_new-pose+score.csv'
 save_path = '../../Data/Coffee_room_new-set(labelXscrw).pkl'
 
 # Params.
@@ -117,12 +116,12 @@ for vid in vid_list:
         # Targets.
         lb = data.iloc[fs, -len(cols):].values
         # Apply points score mean to all labels.
-        #lb = lb * scr[:, None]
+        lb = lb * scr[:, None]
 
         for i in range(xys.shape[0] - n_frames):
             feature_set = np.append(feature_set, xys[i:i+n_frames][None, ...], axis=0)
             labels_set = np.append(labels_set, lb[i:i+n_frames].mean(0)[None, ...], axis=0)
 
 
-with open(save_path, 'wb') as f:
-    pickle.dump((feature_set, labels_set), f)
+"""with open(save_path, 'wb') as f:
+    pickle.dump((feature_set, labels_set), f)"""

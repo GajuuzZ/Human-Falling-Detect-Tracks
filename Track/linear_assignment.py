@@ -1,5 +1,6 @@
 import numpy as np
-from sklearn.utils.linear_assignment_ import linear_assignment
+#from sklearn.utils.linear_assignment_ import linear_assignment
+from scipy.optimize import linear_sum_assignment
 
 """
 Table for the 0.95 quantile of the chi-square distribution with N degrees of
@@ -62,7 +63,8 @@ def min_cost_matching(distance_metric, max_distance, tracks, detections,
 
     cost_matrix = distance_metric(tracks, detections, track_indices, detection_indices)
     cost_matrix[cost_matrix > max_distance] = max_distance + 1e-5
-    indices = linear_assignment(cost_matrix)
+    indices = linear_sum_assignment(cost_matrix)
+    indices = np.array(indices).transpose()
 
     matches, unmatched_tracks, unmatched_detections = [], [], []
     for col, detection_idx in enumerate(detection_indices):

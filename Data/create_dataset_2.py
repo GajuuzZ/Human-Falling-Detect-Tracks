@@ -1,6 +1,11 @@
 """
 This script to extract skeleton joints position and score.
 
+- This 'annot_folder' is a action class and bounding box for each frames that came with dataset.
+    Should be in format of [frame_idx, action_cls, xmin, ymin, xmax, ymax]
+        Use for crop a person to use in pose estimation model.
+- If have no annotation file you can leave annot_folder = '' for use Detector model to get the
+    bounding box.
 """
 
 import os
@@ -11,18 +16,18 @@ import pandas as pd
 import numpy as np
 import torchvision.transforms as transforms
 
-from ..DetectorLoader import TinyYOLOv3_onecls
-from ..PoseEstimateLoader import SPPE_FastPose
-from ..fn import vis_frame_fast
+from DetectorLoader import TinyYOLOv3_onecls
+from PoseEstimateLoader import SPPE_FastPose
+from fn import vis_frame_fast
 
 save_path = '../../Data/Home_new-pose+score.csv'
 
-annot_file = '../../Data/Home_new.csv'
+annot_file = '../../Data/Home_new.csv'  # from create_dataset_1.py
 video_folder = '../Data/falldata/Home/Videos'
 annot_folder = '../Data/falldata/Home/Annotation_files'  # bounding box annotation for each frame.
 
 # DETECTION MODEL.
-#detector = TinyYOLOv3_onecls()
+detector = TinyYOLOv3_onecls()
 
 # POSE MODEL.
 inp_h = 320
@@ -53,12 +58,6 @@ for vid in vid_list:
     df = pd.DataFrame(columns=columns)
     cur_row = 0
 
-    # Bounding Boxs Labels.
-    video_annot = pd.read_csv(os.path.join(annot_folder, vid.split('.')[0]) + '.txt',
-                              header=None, names=[1, 2, 3, 4, 5, 6])
-    video_annot = video_annot.dropna().reset_index(drop=True)
-    video_annot_frames = video_annot.iloc[:, 0].tolist()
-
     # Pose Labels.
     frames_label = annot[annot['video'] == vid].reset_index(drop=True)
 
@@ -67,8 +66,15 @@ for vid in vid_list:
     frame_size = (int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
                   int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
-    assert frames_count == len(video_annot_frames), 'frame count not equal! {} and {}'.format(
-        frames_count, len(video_annot_frames))
+    # Bounding Boxs Labels.
+    annot_file = os.path.join(annot_folder, vid.split('.')[0], '.txt')
+    annot = None
+    if os.path.exists(annot_file):
+        annot = pd.read_csv(annot_file, header=None,
+                                  names=['frame_idx', 'class', 'xmin', 'ymin', 'xmax', 'ymax'])
+        annot = annot.dropna().reset_index(drop=True)
+
+        assert frames_count == len(annot), 'frame count not equal! {} and {}'.format(frames_count, len(annot))
 
     fps_time = 0
     i = 1
@@ -78,7 +84,10 @@ for vid in vid_list:
             frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             cls_idx = int(frames_label[frames_label['frame'] == i]['label'])
 
-            bb = np.array(video_annot.iloc[i-1, 2:].astype(int))
+            if annot:
+                bb = np.array(annot.iloc[i-1, 2:].astype(int))
+            else:
+                bb = detector.detect(frame)[0, :4].numpy().astype(int)
             bb[:2] = np.maximum(0, bb[:2] - 5)
             bb[2:] = np.minimum(frame_size, bb[2:] + 5) if bb[2:].any() != 0 else bb[2:]
 
@@ -91,6 +100,7 @@ for vid in vid_list:
                 pt_norm = normalize_points_with_size(result[0]['keypoints'].numpy().copy(),
                                                      frame_size[0], frame_size[1])
                 pt_norm = np.concatenate((pt_norm, result[0]['kp_score']), axis=1)
+
                 #idx = result[0]['kp_score'] <= 0.05
                 #pt_norm[idx.squeeze()] = np.nan
                 row = [vid, i, *pt_norm.flatten().tolist(), cls_idx]

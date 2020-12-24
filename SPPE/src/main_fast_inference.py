@@ -8,7 +8,6 @@ from SPPE.src.utils.img import flip, shuffleLR
 from SPPE.src.utils.eval import getPrediction
 from SPPE.src.models.FastPose import FastPose
 
-import visdom
 import time
 import sys
 
