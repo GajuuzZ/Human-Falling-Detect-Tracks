@@ -1,13 +1,9 @@
-import os
 import re
 import cv2
 import time
 import math
 import torch
-import collections
 import numpy as np
-
-from PIL import Image
 
 RED = (0, 0, 255)
 GREEN = (0, 255, 0)
