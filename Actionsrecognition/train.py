@@ -10,7 +10,6 @@ from torch.utils import data
 from torch.optim.adadelta import Adadelta
 from sklearn.model_selection import train_test_split
 
-from pose_utils import motions_map
 from Actionsrecognition.Models import *
 from Visualizer import plot_graphs, plot_confusion_metrix
 
