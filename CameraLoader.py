@@ -24,7 +24,7 @@ class CamLoader:
                            int(self.stream.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
         self.stopped = False
-        self.ret = True
+        self.ret = False
         self.frame = None
         self.ori_frame = None
         self.read_lock = Lock()
@@ -35,7 +35,13 @@ class CamLoader:
     def start(self):
         self.t = Thread(target=self.update, args=())  # , daemon=True)
         self.t.start()
-        time.sleep(0.5)
+        c = 0
+        while not self.ret:
+            time.sleep(0.1)
+            c += 1
+            if c > 20:
+                self.stop()
+                raise TimeoutError('Can not get a frame from camera!!!')
         return self
 
     def update(self):
@@ -69,7 +75,7 @@ class CamLoader:
         self.stopped = True
         if self.t.is_alive():
             self.t.join()
-        #self.stream.release()
+        self.stream.release()
 
     def __del__(self):
         if self.stream.isOpened():
@@ -106,7 +112,13 @@ class CamLoader_Q:
 
     def start(self):
         t = Thread(target=self.update, args=(), daemon=True).start()
-        time.sleep(0.5)
+        c = 0
+        while not self.ret:
+            time.sleep(0.1)
+            c += 1
+            if c > 20:
+                self.stop()
+                raise TimeoutError('Can not get a frame from camera!!!')
         return self
 
     def update(self):
@@ -141,7 +153,7 @@ class CamLoader_Q:
         if self.stopped:
             return
         self.stopped = True
-        #self.stream.release()
+        self.stream.release()
 
     def __len__(self):
         return self.Q.qsize()
@@ -160,7 +172,7 @@ if __name__ == '__main__':
 
     # Using threading.
     cam = CamLoader(0).start()
-    while True:
+    while cam.grabbed():
         frames = cam.getitem()
 
         frames = cv2.putText(frames, 'FPS: %f' % (1.0 / (time.time() - fps_time)),
