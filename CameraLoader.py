@@ -104,6 +104,7 @@ class CamLoader_Q:
                            int(self.stream.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
         # Queue for storing each frames.
+
         self.stopped = False
         self.batch_size = batch_size
         self.Q = Queue(maxsize=queue_size)
@@ -113,7 +114,7 @@ class CamLoader_Q:
     def start(self):
         t = Thread(target=self.update, args=(), daemon=True).start()
         c = 0
-        while not self.ret:
+        while not self.grabbed():
             time.sleep(0.1)
             c += 1
             if c > 20:
@@ -140,7 +141,7 @@ class CamLoader_Q:
             else:
                 with self.Q.mutex:
                     self.Q.queue.clear()
-            #time.sleep(0.05)
+            # time.sleep(0.05)
 
     def grabbed(self):
         """Return `True` if can read a frame."""
